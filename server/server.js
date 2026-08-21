@@ -14,11 +14,9 @@ const aiRoutes = require("./routes/aiRoutes");
 
 const app = express();
 
-// Check whether OpenAI API key is loaded
-console.log(
-    "OpenAI API Key:",
-    process.env.OPENAI_API_KEY ? "Loaded ✅" : "Missing ❌"
-);
+if (!process.env.OPENAI_API_KEY) {
+    console.log("OpenAI API Key: not set (AI matching disabled until OPENAI_API_KEY is added)");
+}
 
 // Middleware
 app.use(cors({

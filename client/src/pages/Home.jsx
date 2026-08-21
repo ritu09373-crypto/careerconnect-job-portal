@@ -1,425 +1,192 @@
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import api from "../services/api";
 import "./Home.css";
 
 function Home() {
   const navigate = useNavigate();
+  const [query, setQuery] = useState("");
+  const [location, setLocation] = useState("");
+  const [jobCount, setJobCount] = useState(null);
+
+  useEffect(() => {
+    let active = true;
+    api
+      .get("/jobs")
+      .then(({ data }) => {
+        if (active) setJobCount(data.count ?? data.jobs?.length ?? 0);
+      })
+      .catch(() => {
+        if (active) setJobCount(0);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const searchJobs = (event) => {
+    event.preventDefault();
+    const params = new URLSearchParams();
+    if (query.trim()) params.set("query", query.trim());
+    if (location.trim()) params.set("location", location.trim());
+    const qs = params.toString();
+    navigate(qs ? `/jobs?${qs}` : "/jobs");
+  };
+
+  const popularSearch = (term) => {
+    navigate(`/jobs?query=${encodeURIComponent(term)}`);
+  };
 
   return (
     <div className="home-page">
-
-      {/* ================= HERO ================= */}
       <section className="hero-section">
+        <div className="hero-media" aria-hidden="true" />
+        <div className="hero-overlay" />
 
         <div className="hero-content">
-          <div className="hero-badge">
-            🚀 AI-Powered Career Platform
-          </div>
-
-          <h1>
-            Find the Job That
-            <span> Builds Your Future.</span>
-          </h1>
-
-          <p>
-            Discover opportunities, upload your resume, and let AI
-            help you find jobs that match your skills and career goals.
+          <p className="brand-wordmark">CareerConnect</p>
+          <h1>Find work that fits the way you grow.</h1>
+          <p className="hero-copy">
+            Browse live roles, apply with your resume, and use AI matching to see
+            how your skills line up with each opportunity.
           </p>
 
-          {/* Search */}
-          <div className="hero-search">
-
-            <div className="search-input">
-              <span>🔍</span>
+          <form className="hero-search" onSubmit={searchJobs}>
+            <label className="search-field">
+              <span className="sr-only">Job title or skill</span>
               <input
                 type="text"
-                placeholder="Job title, skills or keywords"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Job title, skills, or keywords"
               />
-            </div>
-
-            <div className="search-input location-input">
-              <span>📍</span>
+            </label>
+            <label className="search-field location-field">
+              <span className="sr-only">Location</span>
               <input
                 type="text"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
                 placeholder="Location"
               />
-            </div>
-
-            <button
-              onClick={() => navigate("/jobs")}
-              className="search-btn"
-            >
-              Search Jobs
+            </label>
+            <button type="submit" className="search-btn">
+              Search jobs
             </button>
-
-          </div>
+          </form>
 
           <div className="popular-searches">
             <span>Popular:</span>
-            <button onClick={() => navigate("/jobs")}>
-              Software Engineer
-            </button>
-            <button onClick={() => navigate("/jobs")}>
-              React Developer
-            </button>
-            <button onClick={() => navigate("/jobs")}>
-              Data Scientist
-            </button>
-          </div>
-        </div>
-
-        <div className="hero-visual">
-
-          <div className="hero-card main-card">
-            <div className="card-top">
-              <div className="company-logo">CC</div>
-
-              <div>
-                <h3>MERN Stack Developer</h3>
-                <p>CareerConnect Technologies</p>
-              </div>
-
-              <span className="verified">✓</span>
-            </div>
-
-            <div className="job-info">
-              <span>📍 Jaipur</span>
-              <span>💼 Full Time</span>
-              <span>💰 ₹6-10 LPA</span>
-            </div>
-
-            <div className="skills">
-              <span>React</span>
-              <span>Node.js</span>
-              <span>MongoDB</span>
-            </div>
-
-            <div className="match-box">
-              <div>
-                <strong>AI Match</strong>
-                <p>Excellent match for your profile</p>
-              </div>
-
-              <div className="match-score">
-                92%
-              </div>
-            </div>
+            {["React Developer", "Data Analyst", "Product Designer"].map((term) => (
+              <button key={term} type="button" onClick={() => popularSearch(term)}>
+                {term}
+              </button>
+            ))}
           </div>
 
-          <div className="floating-card candidate-card">
-            <div className="avatar">👩‍💻</div>
-
-            <div>
-              <strong>Profile Match</strong>
-              <p>AI found 12 suitable jobs</p>
-            </div>
-
-            <span>✓</span>
-          </div>
-
-          <div className="floating-card resume-card">
-            <span className="resume-icon">📄</span>
-
-            <div>
-              <strong>Resume Analyzed</strong>
-              <p>Score: 88/100</p>
-            </div>
-          </div>
-
+          {jobCount !== null && (
+            <p className="hero-live">
+              {jobCount} open {jobCount === 1 ? "role" : "roles"} on the board right now
+            </p>
+          )}
         </div>
       </section>
 
-
-      {/* ================= STATS ================= */}
-      <section className="stats-section">
-
-        <div className="stat">
-          <strong>10K+</strong>
-          <span>Active Jobs</span>
-        </div>
-
-        <div className="stat">
-          <strong>5K+</strong>
-          <span>Companies</span>
-        </div>
-
-        <div className="stat">
-          <strong>25K+</strong>
-          <span>Job Seekers</span>
-        </div>
-
-        <div className="stat">
-          <strong>95%</strong>
-          <span>AI Match Accuracy</span>
-        </div>
-
-      </section>
-
-
-      {/* ================= AI SECTION ================= */}
-      <section className="ai-section">
-
-        <div className="ai-content">
-
-          <div className="section-badge">
-            🤖 SMART CAREER TECHNOLOGY
-          </div>
-
-          <h2>
-            Your career search,
-            <span> powered by AI.</span>
-          </h2>
-
-          <p>
-            Stop applying randomly. CareerConnect analyzes your
-            resume, skills and experience to help you discover
-            opportunities that actually match your profile.
-          </p>
-
-          <div className="ai-features">
-
-            <div className="ai-feature">
-              <div className="feature-icon">🎯</div>
-              <div>
-                <h3>Smart Job Matching</h3>
-                <p>
-                  Get personalized job recommendations based on
-                  your skills and experience.
-                </p>
-              </div>
-            </div>
-
-            <div className="ai-feature">
-              <div className="feature-icon">📄</div>
-              <div>
-                <h3>AI Resume Analysis</h3>
-                <p>
-                  Upload your resume and receive intelligent
-                  insights to improve your profile.
-                </p>
-              </div>
-            </div>
-
-            <div className="ai-feature">
-              <div className="feature-icon">📈</div>
-              <div>
-                <h3>Career Insights</h3>
-                <p>
-                  Understand your strengths and discover skills
-                  that can improve your career opportunities.
-                </p>
-              </div>
-            </div>
-
-          </div>
-
-          <button
-            className="primary-btn"
-            onClick={() => navigate("/jobs")}
-          >
-            Explore AI-Matched Jobs →
-          </button>
-
-        </div>
-
-        <div className="ai-dashboard">
-
-          <div className="dashboard-header">
-            <div>
-              <span>AI Job Match</span>
-              <h3>MERN Stack Developer</h3>
-            </div>
-
-            <span className="ai-icon">✨</span>
-          </div>
-
-          <div className="score-circle">
-            <div>
-              <strong>92%</strong>
-              <span>Match</span>
-            </div>
-          </div>
-
-          <div className="match-details">
-
-            <div>
-              <span>✓</span>
-              React.js
-              <b>Strong</b>
-            </div>
-
-            <div>
-              <span>✓</span>
-              Node.js
-              <b>Strong</b>
-            </div>
-
-            <div>
-              <span>✓</span>
-              MongoDB
-              <b>Strong</b>
-            </div>
-
-            <div className="missing">
-              <span>!</span>
-              Docker
-              <b>Learn</b>
-            </div>
-
-          </div>
-
-        </div>
-
-      </section>
-
-
-      {/* ================= HOW IT WORKS ================= */}
       <section className="how-section">
-
         <div className="section-heading">
-
-          <span className="section-badge">
-            SIMPLE PROCESS
-          </span>
-
-          <h2>
-            Your next opportunity is
-            <span> three steps away.</span>
-          </h2>
-
-          <p>
-            Everything you need to take the next step in your career.
-          </p>
-
+          <p className="section-kicker">How it works</p>
+          <h2>Three clear steps from profile to offer.</h2>
+          <p>Built for job seekers and recruiters who want a focused hiring flow.</p>
         </div>
 
         <div className="steps">
-
-          <div className="step">
-            <div className="step-number">01</div>
-            <div className="step-icon">👤</div>
-
-            <h3>Create Your Profile</h3>
-
-            <p>
-              Build your professional profile and showcase
-              your skills, experience and career goals.
-            </p>
-          </div>
-
-          <div className="step">
-            <div className="step-number">02</div>
-            <div className="step-icon">📄</div>
-
-            <h3>Upload Your Resume</h3>
-
-            <p>
-              Upload your resume and let our AI analyze
-              your skills and experience.
-            </p>
-          </div>
-
-          <div className="step">
-            <div className="step-number">03</div>
-            <div className="step-icon">🚀</div>
-
-            <h3>Find & Apply</h3>
-
-            <p>
-              Discover relevant jobs, apply with confidence
-              and track your applications.
-            </p>
-          </div>
-
+          <article className="step">
+            <span className="step-number">01</span>
+            <h3>Create your profile</h3>
+            <p>Set your role, skills, and experience so matches stay relevant.</p>
+          </article>
+          <article className="step">
+            <span className="step-number">02</span>
+            <h3>Discover roles</h3>
+            <p>Search by skill, location, and experience — then open the details that matter.</p>
+          </article>
+          <article className="step">
+            <span className="step-number">03</span>
+            <h3>Apply and track</h3>
+            <p>Submit a PDF resume, follow status updates, and keep every application in one place.</p>
+          </article>
         </div>
-
       </section>
 
-
-      {/* ================= CTA ================= */}
-      <section className="cta-section">
-
+      <section className="split-section">
         <div>
-          <span>READY TO START?</span>
-
-          <h2>
-            Your next career opportunity
-            <br />
-            could be one click away.
-          </h2>
-
+          <p className="section-kicker">For both sides of hiring</p>
+          <h2>One platform. Two clear workspaces.</h2>
           <p>
-            Join CareerConnect and discover opportunities
-            designed for your skills.
+            Job seekers get search, applications, and AI fit scores. Recruiters get
+            posting tools, candidate review, and status updates.
           </p>
-
-          <div className="cta-buttons">
-
-            <button
-              className="cta-primary"
-              onClick={() => navigate("/jobs")}
-            >
-              Find Jobs →
+          <div className="split-actions">
+            <button type="button" className="primary-btn" onClick={() => navigate("/jobs")}>
+              Browse jobs
             </button>
-
-            <button
-              className="cta-secondary"
-              onClick={() => navigate("/register")}
-            >
-              Create Free Account
+            <button type="button" className="ghost-btn" onClick={() => navigate("/register")}>
+              Create account
             </button>
-
           </div>
         </div>
-
+        <ul className="feature-list">
+          <li>
+            <strong>Smart matching</strong>
+            <span>Compare your profile skills with a role and get a clear fit score.</span>
+          </li>
+          <li>
+            <strong>Resume-ready applications</strong>
+            <span>Upload a PDF and send a cover letter in one short flow.</span>
+          </li>
+          <li>
+            <strong>Recruiter dashboard</strong>
+            <span>Publish openings and manage candidates without leaving the app.</span>
+          </li>
+        </ul>
       </section>
 
+      <section className="cta-section">
+        <div>
+          <p className="section-kicker light">Ready when you are</p>
+          <h2>Start with a search or create your free account.</h2>
+          <div className="cta-buttons">
+            <button type="button" className="cta-primary" onClick={() => navigate("/jobs")}>
+              Find jobs
+            </button>
+            <button type="button" className="cta-secondary" onClick={() => navigate("/register")}>
+              Join CareerConnect
+            </button>
+          </div>
+        </div>
+      </section>
 
-      {/* ================= FOOTER ================= */}
       <footer className="home-footer">
-
         <div className="footer-brand">
-
           <h2>
             Career<span>Connect</span>
           </h2>
-
-          <p>
-            Connecting talent with opportunity through
-            intelligent technology.
-          </p>
-
+          <p>Connecting talent with opportunity through a clear, practical hiring experience.</p>
         </div>
-
         <div className="footer-links">
-
           <div>
             <h4>Platform</h4>
-            <button onClick={() => navigate("/jobs")}>
-              Find Jobs
-            </button>
-            <button onClick={() => navigate("/applications")}>
-              My Applications
-            </button>
+            <button type="button" onClick={() => navigate("/jobs")}>Find jobs</button>
+            <button type="button" onClick={() => navigate("/applications")}>My applications</button>
           </div>
-
           <div>
             <h4>Account</h4>
-            <button onClick={() => navigate("/login")}>
-              Login
-            </button>
-            <button onClick={() => navigate("/register")}>
-              Register
-            </button>
+            <button type="button" onClick={() => navigate("/login")}>Login</button>
+            <button type="button" onClick={() => navigate("/register")}>Register</button>
           </div>
-
         </div>
-
-        <div className="footer-bottom">
-          © 2026 CareerConnect. All rights reserved.
-        </div>
-
+        <div className="footer-bottom">© {new Date().getFullYear()} CareerConnect. All rights reserved.</div>
       </footer>
-
     </div>
   );
 }

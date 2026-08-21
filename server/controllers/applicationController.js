@@ -61,11 +61,11 @@ const applyForJob = async (req, res) => {
             });
         }
 
-        // Create application
+        const baseUrl = (process.env.PUBLIC_URL || `${req.protocol}://${req.get("host")}`).replace(/\/$/, "");
         const application = await Application.create({
             job: jobId,
             applicant: req.user.id,
-            resume: `${req.protocol}://${req.get("host")}/uploads/resumes/${req.file.filename}`,
+            resume: `${baseUrl}/uploads/resumes/${req.file.filename}`,
             coverLetter: coverLetter || "",
         });
 

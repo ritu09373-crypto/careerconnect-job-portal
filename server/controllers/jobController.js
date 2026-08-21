@@ -91,13 +91,33 @@ const createJob = async (req, res) => {
     }
 };
 
+const escapeRegex = (value = "") => String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
 // ============================
 // GET ALL ACTIVE JOBS
 // Public
 // ============================
 const getAllJobs = async (req, res) => {
     try {
-        const jobs = await Job.find({ status: "active" })
+        const { query, location, category, jobType, experience } = req.query;
+        const filter = { status: "active" };
+
+        if (location) filter.location = new RegExp(`^${escapeRegex(location)}$`, "i");
+        if (category) filter.category = new RegExp(`^${escapeRegex(category)}$`, "i");
+        if (jobType) filter.jobType = jobType;
+        if (experience) filter.experienceLevel = experience;
+        if (query) {
+            const q = new RegExp(escapeRegex(query), "i");
+            filter.$or = [
+                { title: q },
+                { company: q },
+                { description: q },
+                { skills: q },
+                { category: q },
+            ];
+        }
+
+        const jobs = await Job.find(filter)
             .populate("recruiter", "name email")
             .sort({ createdAt: -1 });
 
