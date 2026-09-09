@@ -146,6 +146,9 @@ export default function JobDetails() {
                   <small>/100</small>
                 </div>
                 <strong>Your fit score</strong>
+                {match.source === "local" && (
+                  <p className="match-source">Skill-based analysis is active. Add OPENAI_API_KEY in server/.env for GPT scoring.</p>
+                )}
                 <p>{match.recommendation}</p>
                 {match.matchingSkills?.length > 0 && (
                   <p>

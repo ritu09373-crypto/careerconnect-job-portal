@@ -1,9 +1,10 @@
-// Load environment variables FIRST
-require("dotenv").config();
+const path = require("path");
+
+// Load environment variables from server/.env regardless of process cwd
+require("dotenv").config({ path: path.join(__dirname, ".env") });
 
 const express = require("express");
 const cors = require("cors");
-const path = require("path");
 
 const connectDB = require("./config/db");
 
@@ -14,8 +15,10 @@ const aiRoutes = require("./routes/aiRoutes");
 
 const app = express();
 
-if (!process.env.OPENAI_API_KEY) {
-    console.log("OpenAI API Key: not set (AI matching disabled until OPENAI_API_KEY is added)");
+if (!(process.env.OPENAI_API_KEY || "").trim()) {
+    console.log("OpenAI API Key: not set (using built-in skill matching until OPENAI_API_KEY is added)");
+} else {
+    console.log("OpenAI API Key: loaded");
 }
 
 // Middleware

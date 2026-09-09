@@ -52,7 +52,7 @@ App runs at `http://localhost:5173`.
 - Track applications
 - Recruiter dashboard: create / edit / delete jobs, update candidate status
 - Profile management (skills power AI matching)
-- Optional OpenAI job match on job details (`OPENAI_API_KEY` in `server/.env`)
+- Job-match analysis on job details (built-in skill scoring, optional OpenAI via `OPENAI_API_KEY`)
 
 ## Environment
 

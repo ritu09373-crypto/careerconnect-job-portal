@@ -21,6 +21,7 @@
   align-items: center;
   padding: 96px 7% 72px;
   overflow: hidden;
+  max-width: 100%;
   color: #f4fffc;
   background: #0a1628;
 }
@@ -46,26 +47,32 @@
 .hero-content {
   position: relative;
   z-index: 1;
+  width: 100%;
   max-width: 760px;
+  min-width: 0;
   animation: rise-in 0.8s ease both;
 }
 
 .brand-wordmark {
   margin: 0 0 18px;
+  width: 100%;
+  max-width: 100%;
   font-family: var(--font-display);
-  font-size: clamp(2.4rem, 6vw, 4.4rem);
+  font-size: clamp(1.35rem, calc((100vw - 2.75rem) / 12), 4.4rem);
   font-weight: 800;
   letter-spacing: -0.04em;
-  line-height: 0.95;
+  line-height: 1.1;
+  white-space: nowrap;
 }
 
 .hero-content h1 {
   margin: 0 0 16px;
-  max-width: 14ch;
-  font-size: clamp(1.7rem, 3.4vw, 2.6rem);
+  max-width: min(14ch, 100%);
+  font-size: clamp(1.35rem, 5vw, 2.6rem);
   font-weight: 700;
-  line-height: 1.15;
+  line-height: 1.2;
   color: #f4fffc;
+  overflow-wrap: break-word;
 }
 
 .hero-copy {
@@ -79,6 +86,9 @@
 .hero-search {
   display: flex;
   gap: 8px;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   margin-top: 34px;
   padding: 8px;
   border-radius: 16px;
@@ -166,8 +176,10 @@
 .split-section h2,
 .cta-section h2 {
   margin: 0 0 12px;
-  font-size: clamp(2rem, 4vw, 3rem);
-  line-height: 1.1;
+  max-width: 100%;
+  font-size: clamp(1.55rem, 6vw, 3rem);
+  line-height: 1.15;
+  overflow-wrap: break-word;
 }
 
 .section-heading p,
@@ -393,9 +405,13 @@
 
 @media (max-width: 900px) {
   .hero-section {
-    min-height: 86vh;
-    padding: 120px 24px 48px;
+    min-height: auto;
+    padding: 88px 18px 48px;
     align-items: center;
+  }
+
+  .hero-content {
+    max-width: 100%;
   }
 
   .hero-search {
@@ -424,8 +440,12 @@
   }
 
   .cta-section {
-    margin: 0 24px 56px;
-    padding: 40px 28px;
+    margin: 0 16px 48px;
+    padding: 32px 20px;
+  }
+
+  .cta-section h2 {
+    max-width: 100%;
   }
 
   .home-footer {
@@ -433,6 +453,22 @@
   }
 
   .footer-links {
-    gap: 36px;
+    flex-wrap: wrap;
+    gap: 28px 36px;
+  }
+}
+
+@media (max-width: 600px) {
+  .hero-section {
+    padding: 72px 16px 40px;
+  }
+
+  .how-section,
+  .split-section {
+    padding: 56px 16px;
+  }
+
+  .home-footer {
+    padding: 40px 16px 20px;
   }
 }

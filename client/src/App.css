@@ -1,39 +1,47 @@
 .navbar {
-  height: 72px;
+  min-height: 64px;
   position: sticky;
   top: 0;
-  z-index: 20;
-  background: rgba(243, 247, 246, 0.86);
+  z-index: 30;
+  background: rgba(243, 247, 246, 0.92);
   backdrop-filter: blur(14px);
   border-bottom: 1px solid rgba(213, 224, 230, 0.9);
 }
 
 .nav-inner,
 .page {
-  width: min(1120px, calc(100% - 40px));
+  width: min(1120px, calc(100% - 32px));
   margin: 0 auto;
 }
 
 .nav-inner {
-  height: 100%;
+  min-height: 64px;
   display: flex;
   align-items: center;
-  gap: 28px;
+  gap: 20px;
+  padding: 8px 0;
 }
 
 .logo {
   display: flex;
   align-items: center;
   gap: 10px;
+  min-width: 0;
   text-decoration: none;
   color: var(--ink);
   font-weight: 800;
-  font-size: 1.08rem;
+  font-size: clamp(0.95rem, 2.6vw, 1.08rem);
+}
+
+.logo-text {
+  min-width: 0;
+  white-space: nowrap;
 }
 
 .logo-mark {
   display: inline-grid;
   place-items: center;
+  flex-shrink: 0;
   width: 34px;
   height: 34px;
   border-radius: 10px;
@@ -65,6 +73,22 @@
   display: flex;
   align-items: center;
   gap: 14px;
+}
+
+.nav-panel {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  flex: 1;
+  min-width: 0;
+}
+
+.nav-toggle {
+  display: none;
+  margin-left: auto;
+  border: 0;
+  background: transparent;
+  padding: 8px;
 }
 
 .profile-link {
@@ -100,8 +124,9 @@
 .page h1 {
   margin: 0 0 12px;
   color: var(--ink);
-  font-size: clamp(2rem, 5vw, 3.4rem);
-  line-height: 1.05;
+  font-size: clamp(1.7rem, 5vw, 3.4rem);
+  line-height: 1.12;
+  overflow-wrap: break-word;
 }
 
 .lead {
@@ -223,6 +248,12 @@ textarea {
   align-items: center;
   gap: 10px;
   padding: 14px;
+}
+
+.job-card h2,
+.candidate-info h3,
+.role-row h3 {
+  overflow-wrap: anywhere;
 }
 
 .result-count {
@@ -392,6 +423,11 @@ textarea {
   font-size: 0.88rem;
 }
 
+.match-source {
+  color: #9fe8df;
+  font-size: 0.82rem;
+}
+
 .match-result {
   border-top: 1px solid rgba(255, 255, 255, 0.28);
   margin-top: 18px;
@@ -547,8 +583,9 @@ textarea {
 
 .recruiter-page {
   max-width: 1240px;
+  width: 100%;
   margin: 0 auto;
-  padding: 38px 28px 80px;
+  padding: 38px max(16px, env(safe-area-inset-right)) 80px max(16px, env(safe-area-inset-left));
 }
 
 .dash-banner {
@@ -566,7 +603,8 @@ textarea {
 .dash-banner h1 {
   margin: 4px 0 10px;
   color: #fff;
-  font-size: clamp(2.2rem, 5vw, 3.8rem);
+  font-size: clamp(1.7rem, 6vw, 3.8rem);
+  overflow-wrap: anywhere;
 }
 
 .dash-banner .eyebrow {
@@ -779,31 +817,105 @@ textarea {
   margin-top: 18px;
 }
 
-@media (max-width: 900px) {
-  .filters,
-  .detail-layout,
+.nav-toggle-bars {
+  display: grid;
+  gap: 5px;
+  width: 22px;
+}
+
+.nav-toggle-bars i {
+  display: block;
+  height: 2px;
+  border-radius: 99px;
+  background: var(--ink);
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.nav-toggle-bars.open i:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+
+.nav-toggle-bars.open i:nth-child(2) {
+  opacity: 0;
+}
+
+.nav-toggle-bars.open i:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+@media (max-width: 1024px) {
+  .filters {
+    grid-template-columns: 1fr 1fr;
+  }
+
   .recruiter-grid,
+  .detail-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 900px) {
   .form-grid,
-  .candidate-grid {
+  .candidate-grid,
+  .stat-grid {
     grid-template-columns: 1fr;
   }
 
-  .nav-links {
-    display: none;
+  .nav-toggle {
+    display: inline-flex;
   }
 
+  .nav-panel {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    padding: 12px 16px 20px;
+    background: #f7fbfa;
+    border-bottom: 1px solid var(--line);
+    box-shadow: var(--shadow);
+  }
+
+  .nav-panel.open {
+    display: flex;
+  }
+
+  .nav-links,
   .nav-actions {
-    margin-left: auto;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+    margin: 0;
+  }
+
+  .nav-links a,
+  .nav-actions a,
+  .nav-actions .text-button,
+  .nav-actions .button {
+    width: 100%;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 10px 8px;
   }
 
   .stat-grid {
-    margin: -16px 8px 24px;
+    margin: 16px 0 24px;
+    grid-template-columns: 1fr;
   }
 
   .job-card,
   .application-job,
   .app-card-top,
-  .detail-hero {
+  .detail-hero,
+  .editor-heading,
+  .panel-heading,
+  .section-title {
     flex-direction: column;
     align-items: stretch;
   }
@@ -815,26 +927,67 @@ textarea {
   .candidate-card select {
     grid-column: 1 / -1;
   }
+
+  .auth-shell {
+    min-height: calc(100dvh - 64px);
+    padding: 24px 16px;
+  }
+}
+
+@media (min-width: 640px) and (max-width: 900px) {
+  .stat-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
 @media (max-width: 600px) {
+  .nav-inner,
   .page {
-    padding-top: 32px;
+    width: min(1120px, calc(100% - 24px));
+  }
+
+  .page {
+    padding: 28px 0 56px;
   }
 
   .recruiter-page {
-    padding: 24px 16px 60px;
+    padding: 20px 12px 56px;
   }
 
   .dash-banner {
-    padding: 28px 22px;
+    min-height: 0;
+    padding: 22px 18px;
+    border-radius: 18px;
+  }
+
+  .stat-grid {
+    margin: 14px 0 20px;
+  }
+
+  .editor-card,
+  .roles-panel {
+    padding: 18px;
   }
 
   .detail-hero {
-    padding: 28px;
+    padding: 22px;
+    border-radius: 18px;
   }
 
   .auth-card {
-    padding: 28px 22px;
+    padding: 22px 18px;
+  }
+
+  .filters {
+    grid-template-columns: 1fr;
+  }
+
+  .role-row {
+    flex-direction: column;
+  }
+
+  .role-actions {
+    grid-auto-flow: column;
+    justify-content: start;
   }
 }
